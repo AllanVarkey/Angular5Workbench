@@ -1,0 +1,228 @@
+ BINDINGS
+
+( ) : Event Bind/ Function Bind
+[ ] : Property Bind
+[( )] : Two Way Binding
+{{ }} :  String Binding
+
+Variable declaration:
+
+userName: string; // this is how you declare a variable name
+    firstName: string;
+    lastName: string;
+    age: number = 0;
+    birthYear: number = 1989;
+    numberArray: number[]; // this is how you set a number array
+    address: object = {
+        street: "Windhaven Close SW",
+        city: "Airdrie",
+        state: "Alberta"
+    }
+    mixedArray: any[];
+
+    myTuple:[string,number,boolean]; //this is how you declare a tuple
+==================================================================
+INTEFACES
+
+ listed under the folder models . Name of the file starts with uppercase.
+We use interfaces if we need to use the same model over and over again in different components.
+
+// this is what an interface looks like
+export interface User{
+    firstName: "Allan",
+    lastName: "Varkey",
+    age: 30,
+    address: {
+        city: "Airdrie",
+        street: "1036 Windhaven Close SW",
+        state: "Alberta"
+}
+==================================================================
+ng For:
+
+we use ngFor on thehtml side to iterate through an array of objects.  the following is an example of using ngFor 
+to list out the firstName property of the objects.
+
+<h2>
+  <ul>
+    <li *ngFor="let user of users">
+      {{user.firstName}}
+    </li>
+  </ul>
+</h2>>
+===================================================================
+
+ngIf
+  <ul *ngIf="users.length>0;else noUsers">
+  
+  in this case this is where we test for the users.length. if its greater than 0, it executes
+  the body of the loop. but lets say if theres is no users. then the length boolean expression
+  will fail.
+  this  it will look for the ng-template with the tag #noUsers and exectute that.
+
+ <ng-template #noUsers>No users Found [Via Template]</ng-template>
+  =================================================================
+
+
+Http Requests
+
+Create a service and import
+
+import { HttpClient, HttpHeaders } from '@angular/common/http'
+import { Observable, of } from 'rxjs';
+
+Create private property for the http client
+
+constructor(private http: HttpClient)
+
+  //get
+  getPost(): Observable<Post[]> {
+    return this.http.get<Post[]>(this.postsUrl);
+  }
+  //post
+  savePost(post: Post): Observable<Post> {
+    return this.http.post<Post>(this.postsUrl, post, this.httpOptions);
+
+  }
+  //put
+  updatePost(post: Post): Observable<Post> {
+    const url = `${this.postsUrl}/${post.id}`;
+    return this.http.put<Post>(url, post, this.httpOptions);
+  }
+  //delete
+  removePost(post: Post | number): Observable<Post> {
+    const id = typeof post === 'number' ? post : post.id;
+    const url = `${this.postsUrl}/${id}`;
+    return this.http.delete<Post>(url, this.httpOptions);
+  }
+}
+====================================================================
+
+From the calling component
+import { PostService } from '../../services/post.service';
+
+Create a private property 
+ constructor(private postServices: PostService) { }
+
+The calls to the service
+
+//get
+    this.postService.getPost().subscribe(response => {
+      this.posts = response;
+    })
+
+//post
+      this.postServices.savePost({ title, body } as Post).subscribe(response => {
+        //emit an event from here to the post component with the new post
+        this.newPost.emit(response);
+      });
+
+//put
+ this.postServices.updatePost(this.currentPost).subscribe(response => {
+      console.log(response);
+      this.updatedPost.emit(response);
+    })
+
+//delete
+ this.postService.removePost(post.id).subscribe(() => {
+        this.posts.forEach((current, index) => {
+          if (post.id === current.id) {
+            this.posts.splice(index, 1);
+          }
+        });
+      });
+
+
+===================================================================================================
+Event Emitter + @Output
+
+From Sender
+import { Component, OnInit, EventEmitter, Output, Input } from '@angular/core';
+
+Properties
+these are the events that occur in the parent that results in an artifact (like a property) that needs to be communicated to an another component.
+
+  @Output() newPost: EventEmitter<Post> = new EventEmitter();
+  @Output() updatedPost: EventEmitter<Post> = new EventEmitter();
+
+
+Called in the parent
+  updatePost() {
+    this.postServices.updatePost(this.currentPost).subscribe(response => {
+      this.updatedPost.emit(response);
+    })
+
+On Receiver
+Now to transfer the property from the sender to the receiver, we find the sender selector in the receiving  html template
+Then we event bind the emitted functions to local functions in the receiver ts
+Which is onNewPost and updatedPost 
+
+<app-post-form [isEdit]="isEdit" [currentPost]="currentPost"db (updatedPost)="updatedPost($event)" (newPost)="onNewPost($event)"></app-post-form>
+	<h1 class="mb-2">Posts</h1>
+	<div class="card" *ngFor="let post of posts">
+	  <div class="card-body">
+	    <h3>{{post.title}}</h3>
+	    <p>{{post.body}}</p>
+	    <hr>
+	    <button (click)="deletePost(post)" class="btn btn-danger"><i class="fa fa-remove"></i></button>
+	    <button (click)="editPost(post)" class="btn btn-light"><i class="fa fa-pencil"></i></button>
+	  </div>
+	</div>
+
+
+We construct the necessary logic in the receiving components ts file.
+
+  updatedPost(post: Post) {
+
+    this.posts.forEach((current, index) => {
+      if (post.id === current.id) {
+        this.posts.splice(index, 1);
+        this.posts.unshift(post);
+      }
+    });
+
+    this.currentPost = {
+      id: 0,
+      title: '',
+      body: ''
+    };
+    this.isEdit = false;
+  }
+
+  onNewPost(post: Post) {
+    this.posts.unshift(post);
+  }
+
+
+======================================================================================
+
+Edit State and @Input
+
+We use @input in a component when we are passing properties from an external component.
+This is passed via the html template of the sender through the receivers selector.
+
+<app-post-form [isEdit]="isEdit" [currentPost]="currentPost" (updatedPost)="updatedPost($event)" (newPost)="onNewPost($event)"></app-post-form>
+<h1 class="mb-2">Posts</h1>
+<div class="card" *ngFor="let post of posts">
+  <div class="card-body">
+    <h3>{{post.title}}</h3>
+    <p>{{post.body}}</p>
+    <hr>
+    <button (click)="deletePost(post)" class="btn btn-danger"><i class="fa fa-remove"></i></button>
+    <button (click)="editPost(post)" class="btn btn-light"><i class="fa fa-pencil"></i></button>
+  </div>
+</div>
+
+On the receiver side, we import
+
+import { Component, OnInit, EventEmitter, Output, Input } from '@angular/core';
+ 
+And declare the @input directives
+  @Input() currentPost: Post;
+  @Input() isEdit: boolean;
+
+This can now be used within the receiving components functions as regular property.
+
+
+Sender.ts -> sender.html ( via receivers selector ) -> receiver.ts ( via  @input directive )  
+

@@ -1,0 +1,21 @@
+<h2> ArcGis Component</h2>
+<hr>
+
+<p-panel header="ArcGis Form" [toggleable]="true" [style]="{'margin-bottom':'20px'}">
+  <form [formGroup]="mapFormGroup" class="ui-g" (ngSubmit)="formSubmission()">
+
+    <div class="ui-g-12">
+      <label for="latitude" class="ui-g-12">Latitude</label>
+      <input type="number" pInputText id="latitude" formControlName="latitude" placeholder="Enter the Latitude" class="ui-g-12 ui-md-5" />
+    </div>
+    <div class="ui-g-12">
+      <label for="longitude" class="ui-g-12">Longitude</label>
+      <input type="number" pInputText id="longitude" formControlName="longitude" placeholder="Enter the longitude" class="ui-g-12 ui-md-5" />
+    </div>
+    <button pButton type="submit" label="Submit"></button>
+  </form>
+</p-panel>
+
+<div>
+    <app-esri-map (mapLoaded)="mapState($event)" [zoom]="this.zoomLevel" [center]="this.location.center" [basemap]="this.baseMap">Loading Map </app-esri-map>
+</div>

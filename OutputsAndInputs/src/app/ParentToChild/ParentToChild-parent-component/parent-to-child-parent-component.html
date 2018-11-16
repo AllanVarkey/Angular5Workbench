@@ -1,0 +1,12 @@
+<h2>Parent Component</h2>
+<!-- 
+
+    Here the Parent Component has the Child  Component embedded as a child.
+    1. The parent Component emitts the string from the ts file.
+    2. in the parent template file the child element is embedded as seen below
+    <app-to-component [incommingMessage]="messageObject"></app-to-component>
+    3. so the emitted message which is the messageObject is property Linked to incommingMessage 
+    in the child object. 
+ -->
+Message from the Parent Component : {{messageObject}}
+<app-parent-to-child-child-component [incommingMessage]="messageObject"></app-parent-to-child-child-component>

@@ -1,0 +1,31 @@
+
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title">Enter Location Details</h5>
+
+    <!-- Form Goes over here -->
+    <form #locationForm="ngForm" (ngSubmit)="onSubmit(locationForm)">
+      <div class="form-group">
+        <label for="Latitude">Latitude and Longitude</label>
+        <input #latitude [(ngModel)]="location.latitude" name="latitude" type="number" class="form-control" id="Latitude" required >
+
+        <input #longitude [(ngModel)]="location.longitude" name="longitude" type="number" class="form-control" id="Longitude" >
+      </div>
+      <div class="form-group">
+        <label for="Zoom">Zoom Level</label>
+        <input [(ngModel)]="location.zoom" type="number" name="zoom" class="form-control" id="Zoom" #zoomTemplateValue >
+      </div>
+
+      <div class="form-group">
+        <label for="Basemap">Basemap</label>
+        <input #basemapTemplateValue [(ngModel)]="location.basemap" name="basemap" type="text" class="form-control" id="Basemap" >
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+  </div>
+</div>
+
+
+<p-panel header="MAPS">
+<app-esri-map (mapLoaded)="mapState($event)" [zoom]="this.location.zoom" [center] = "this.location.center" [basemap] = "this.location.basemap"></app-esri-map>
+</p-panel>

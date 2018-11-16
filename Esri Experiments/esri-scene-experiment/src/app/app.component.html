@@ -1,0 +1,10 @@
+<h2>Scene</h2>
+<app-esri-scene></app-esri-scene>
+
+<br>
+<h2>Regular Map</h2>
+<div>
+<app-esri-map [center]="mapCenter" [basemap]="basemapType" [zoom]="mapZoomLevel" (mapLoaded)="mapLoadedEvent($event)">
+</app-esri-map>
+</div>
+

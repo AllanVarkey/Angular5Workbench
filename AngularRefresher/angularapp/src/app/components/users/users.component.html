@@ -1,19 +1,64 @@
+<button (click)="this.showUserForm=!this.showUserForm" class="btn btn-dark btn-block mb-3">Add User</button>
+<div class= "card card-body mb-3" *ngIf="this.showUserForm">
+<form (submit)="addUser()">
+  <div class="form-group">
+    <label for="firstName">First Name</label>
+    <input type="text" class="form-control" name="firstName">
+  </div>
+  <div class="form-group">
+    <label for="lastName">Last Name</label>
+    <input type="text" class="form-control" name="lastName">
+  </div>
+  <div class="form-group">
+    <label for="age">Age</label>
+    <input type="number" class="form-control" name="Age">
+  </div>
+  <div class="form-group">
+    <label for="Street">Street Address</label>
+    <input type="text" class="form-control" name="Street">
+  </div>
+  <div class="form-group">
+    <label for="City">City</label>
+    <input type="text" class="form-control" name="City">
+  </div>
+  <div class="form-group">
+    <label for="City">State</label>
+    <input type="text" class="form-control" name="State">
+  </div>
+  <button class="btn btn-light btn-block mb-3" [disabled]="!enableAdd" >Add New
+    User</button>
+</form>
+</div>
+
 <h2 *ngIf="users.length > 0">Users</h2>
 
-<ul *ngIf="users.length > 0">
-  <li *ngFor = "let user of users">
-    <h3>{{user.firstName}} {{user.lastName}}</h3>
-    <ul>
-      <li>
+
+<ul class="list-unstyled" *ngIf="users?.length > 0;else noUsers">
+  <li *ngFor="let user of users" class="card card-body mb-2" [class.bg-light]="user.isActive"
+    [style.border-color]="user.isActive? 'green':'red'">
+    <h3> {{user.firstName}} {{user.lastName}}
+      <small *ngIf="user.age && user.address">
+        <button class="btn btn-dark btn-sm" (click)="user.hideDetails = !user.hideDetails">
+          <i [ngClass]="user.hideDetails ? 'fa fa-plus' : 'fa fa-minus'"></i>
+        </button>
+      </small>
+    </h3>
+    <ul class="list-group" *ngIf="(!user.hideDetails) && user.age && user.address">
+      <li class="list-group-item">
         Age: {{user.age}}
       </li>
-      <li>
+      <li class="list-group-item">
         Address: {{user.address.street}}, {{user.address.city}}, {{user.address.state}}
       </li>
-
+      <li class="list-group-item">
+        Date: {{user.registered | date:"mm/dd/yyyy hh:mm:ss"}}
+      </li>
     </ul>
+
 
   </li>
 </ul>
-<h2 *ngIf = "users.length == 0">No users found!</h2>
-
+<ng-template #noUsers>
+  <h2>No Users Found!</h2>
+</ng-template>
+<!-- <h2 *ngIf = "users.length == 0">No users found!</h2> -->

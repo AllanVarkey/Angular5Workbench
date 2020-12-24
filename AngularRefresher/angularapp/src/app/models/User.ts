@@ -1,11 +1,15 @@
 export class User {
   firstName: string;
   lastName: string;
-  age: number;
+  age?: number;
 
-  address: {
+  address?: {
     street: string,
     city: string,
     state: string
   };
+
+  isActive?: boolean;
+  hideDetails?: boolean;
+  registered?: any;
 }
